@@ -23,14 +23,14 @@ const UserSchema = new mongoose.Schema(
     followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "UserModel",
+        ref: "User",
         default: [],
       },
     ],
     following: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "UserModel",
+        ref: "User",
         default: [],
       },
     ],
@@ -50,6 +50,13 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    likedPosts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Posts",
+        default: []
+      }
+    ]
   },
   { timestamps: true }
 );

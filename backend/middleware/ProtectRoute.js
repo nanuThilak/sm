@@ -6,11 +6,11 @@ const protectRoute = async (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
-      return res.status(401).json({ msg: "unauthorized", success: false });
+      return res.status(401).json({ error: "unauthorized", success: false });
     }
     const decoded = await jwt.verify(token, process.env.JWT_KEY);
     if (!decoded) {
-      return res.status(401).json({ msg: "uauthorized", success: false });
+      return res.status(401).json({ error: "uauthorized", success: false });
     }
    
     const user = await UserModel.findOne({ _id: decoded.userId });

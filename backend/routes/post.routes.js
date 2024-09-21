@@ -3,13 +3,21 @@ const {
   likeDislikePost,
   commentPost,
   deletePost,
+  getAllPosts,
+  getLikedPosts,
+  getFollowingPosts,
+  getUserPosts,
 } = require("../controllers/postControllers");
 const { protectRoute } = require("../middleware/ProtectRoute");
 
 const router = require("express").Router();
 
+router.get("/likes/:id", protectRoute, getLikedPosts);
+router.get("/following", protectRoute, getFollowingPosts)
+router.get("/allPost", protectRoute, getAllPosts);
 router.get("/create", protectRoute, createPost);
-router.delete("/like/:id", protectRoute, likeDislikePost);
+router.get("/user/:userName", protectRoute, getUserPosts)
+router.post("/like/:id", protectRoute, likeDislikePost);
 router.post("/comment/:id", protectRoute, commentPost);
-router.delete("/delete", protectRoute, deletePost);
+router.delete("/delete/:id", protectRoute, deletePost);
 module.exports = router;

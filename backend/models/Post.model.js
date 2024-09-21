@@ -4,16 +4,16 @@ const PostSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
-      require: true,
+      ref: "Users",
+      required: true,
     },
 
     text: String,
     img: String,
     likes: [
       {
-        types: mongoose.Schema.Types.ObjectId,
-        ref: "UserModel",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
       },
     ],
     comments: [
@@ -23,8 +23,8 @@ const PostSchema = new mongoose.Schema(
           required: true,
         },
         user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "UserModel",
+          type: mongoose.Schema.ObjectId,
+          ref: "Users",
           required: true,
         },
       },
@@ -33,6 +33,6 @@ const PostSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const PostModel = mongoose.model("posts", PostSchema);
+const PostModel = mongoose.model("Posts", PostSchema);
 
 module.exports = PostModel;

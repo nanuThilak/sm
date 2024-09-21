@@ -5,7 +5,7 @@ const { v2 } = require("cloudinary");
 const getUserProfileController = async (req, res) => {
   try {
     const { userName } = req.params;
-    const user = await UserModel.findOne({ userName }).select("-password");
+    const user = await UserModel.findOne({ userName }).select("-password")
 
     if (!user) {
       return res.status(404).json({ error: "user not found", success: false });
@@ -88,7 +88,7 @@ const getSuggestedProfileController = async (req, res) => {
     );
     const suggestedUser = filteredUsers.slice(0, 5);
     suggestedUser.forEach((user) => (user.password = ""));
-    res.status(200).json({ msg: "suggested users", suggestedUser });
+    return res.status(200).json({ msg: "suggested users", suggestedUser });
   } catch (err) {
     console.log(err.message);
     return res
@@ -159,7 +159,7 @@ const updateUserProfileController = async (req, res) => {
     }
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 module.exports = {

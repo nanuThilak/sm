@@ -1,11 +1,11 @@
 const express = require("express");
+const connectDB = require("./config/db");
 const cookieParser = require("cookie-parser");
 const apiRouter = require("./routes");
 const PORT = process.env.PORT || 4000;
 const bodyParser = require("body-parser");
 const {v2} = require("cloudinary")
 require("dotenv").config();
-const connectDB = require("./config/db");
 const cors = require("cors");
 const app = express();
 connectDB();
