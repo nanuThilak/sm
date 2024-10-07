@@ -4,7 +4,8 @@ const jsonWebToken = require("jsonwebtoken");
 
 const signupController = async (req, res) => {
   try {
-    const { fullName, userName, email, password } = req.body;
+    const { fullName, userName, email, password } = await req.body;
+    console.log(req.body)
     const existingUser = await UserModel.findOne({ userName: userName });
     if (existingUser) {
       return res
