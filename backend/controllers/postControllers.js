@@ -10,10 +10,10 @@ const createPost = async (req, res) => {
     const userId = req.user._id;
     const user = await UserModel.find(userId);
     if (!user) {
-      return res.status(400).json({ err: "User not found" });
+      return res.status(400).json({ error: "User not found" });
     }
     if (!text && !img) {
-      return res.status(400).json({ err: "Post must have text or image" });
+      return res.status(400).json({ error: "Post must have text or image" });
     }
 
     if (img) {
@@ -167,7 +167,7 @@ const getFollowingPosts = async (req, res) => {
       .populate({ path: "user", select: "-password" })
       .populate({ path: "comments.user", select: "-password" });
 
-    return res.status(200).json({ feedPosts });
+    return res.status(200).json(feedPosts);
   } catch (err) {
     console.log(err.message);
     return res.status(500).json({ error: "Internal server error" });

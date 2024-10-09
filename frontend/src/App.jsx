@@ -11,12 +11,15 @@ import LoadingSpinner from "./components/common/LoadingSpinner";
 import { Navigate } from "react-router-dom";
 
 const App = () => {
-  const { data, isLoading, error, isError } = useQuery({
+  const { data, isLoading,} = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
       try {
         const res = await fetch("/api/auth/getUser");
-        const data = res.json();
+        let data = await res.json();
+        if(data.error || data == undefined) {
+          return null
+        }
         if (!res.ok) {
           throw new Error(data.error || "Something went wrong");
         }
@@ -26,6 +29,7 @@ const App = () => {
         throw new Error(err);
       }
     },
+    retry: false,
   });
   if (isLoading) {
     return (
@@ -36,7 +40,7 @@ const App = () => {
   }
   return (
     <div className="flex max-w-6xl mx-auto">
-      <Sidebar />
+      {data && <Sidebar />}
       <Routes>
         <Route
           path="/"
@@ -59,7 +63,7 @@ const App = () => {
           element={data ? <ProfilePage /> : <Navigate to={"/login"} />}
         />
       </Routes>
-      <RightPanel />
+      {data && <RightPanel />}
       <Toaster />
     </div>
   );
