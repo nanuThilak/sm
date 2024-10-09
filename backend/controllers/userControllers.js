@@ -58,8 +58,8 @@ const followUnfollowUserController = async (req, res) => {
       await newNotification.save();
       res.status(200).json({ msg: "User followed successfull" });
     }
-  } catch (err) {
-    console.log(err.message);
+  } catch (error) {
+    console.log(error.message);
     return res
       .status(500)
       .json({ success: false, error: "Internal Server Error" });
