@@ -95,7 +95,9 @@ const likeDislikePost = async (req, res) => {
         { _id: userId },
         { $pull: { likedPosts: postId } }
       );
-      return res.status(200).json({ msg: "Post unlike successfull" });
+
+      const updatedLikes = post.likes.filter(id => id.toString() !== userId.toString())
+      return res.status(200).json(updatedLikes);
     } else {
       post.likes.push(userId);
       await post.save();
@@ -109,7 +111,8 @@ const likeDislikePost = async (req, res) => {
         { _id: userId },
         { $push: { likedPosts: postId } }
       );
-      return res.status(200).json({ message: "Post liked successfull" });
+      const updatedLikes = post.likes
+      return res.status(200).json(updatedLikes);
     }
   } catch (err) {
     console.log(err.message);
