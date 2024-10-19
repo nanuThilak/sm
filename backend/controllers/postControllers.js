@@ -96,7 +96,9 @@ const likeDislikePost = async (req, res) => {
         { $pull: { likedPosts: postId } }
       );
 
-      const updatedLikes = post.likes.filter(id => id.toString() !== userId.toString())
+      const updatedLikes = post.likes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
       return res.status(200).json(updatedLikes);
     } else {
       post.likes.push(userId);
@@ -111,7 +113,7 @@ const likeDislikePost = async (req, res) => {
         { _id: userId },
         { $push: { likedPosts: postId } }
       );
-      const updatedLikes = post.likes
+      const updatedLikes = post.likes;
       return res.status(200).json(updatedLikes);
     }
   } catch (err) {
@@ -150,7 +152,7 @@ const getLikedPosts = async (req, res) => {
     const likedPosts = await PostModel.find({ _id: { $in: user.likedPosts } })
       .populate({ path: "user", select: "-password" })
       .populate({ path: "comments.user", select: "-password" });
-    return res.status(200).json({ msg: "user all liked posts", likedPosts });
+    return res.status(200).json(likedPosts);
   } catch (err) {
     console.log(err.message);
     return res.status(500).json({ msg: "Internal server error" });

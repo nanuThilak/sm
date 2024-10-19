@@ -59,7 +59,7 @@ const App = () => {
           element={data ? <NotificationPage /> : <Navigate to={"/login"} />}
         />
         <Route
-          path="/profile/:username"
+          path="/profile/:userName"
           element={data ? <ProfilePage /> : <Navigate to={"/login"} />}
         />
       </Routes>
