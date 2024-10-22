@@ -5,6 +5,7 @@ import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
 
+import useFollow from "../../hooks/useFollow";
 import { POSTS } from "../../utils/db/dummy";
 
 import { FaArrowLeft } from "react-icons/fa6";
@@ -12,18 +13,18 @@ import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
 
 const ProfilePage = () => {
   const [coverImg, setCoverImg] = useState(null);
   const [profileImg, setProfileImg] = useState(null);
-const {userName} = useParams()
+  const { userName } = useParams();
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
-
-  const isMyProfile = true;
-
+  const { mutate, isPending } = useFollow();
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const queryClient = useQueryClient();
   const {
     data: user,
     isLoading,
@@ -39,17 +40,54 @@ const {userName} = useParams()
           throw new Error(data.error || "Sommething went wrong");
         }
         return data;
-
       } catch (err) {
         throw new Error(err);
       }
     },
   });
+
   useEffect(() => {
     refetch();
   }, [userName, refetch]);
-  const memberSinceDate = formatMemberSinceDate(user?.createdAt)
+
+  const { mutate: updateProfile, isPending: updatingProfile } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch(`/api/user/update`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            profileImg,
+            coverImg,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+        return data;
+      } catch (err) {
+        throw new Error(err.message);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Profile updated successfully");
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+        queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
+      ]);
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const memberSinceDate = formatMemberSinceDate(user?.createdAt);
   const [feedType, setFeedType] = useState("posts");
+  const isMyProfile = authUser.msg._id == user?._id;
+  const amIFollowing = authUser?.msg.following.includes(user?._id);
 
   const handleImgChange = (e, state) => {
     const file = e.target.files[0];
@@ -62,7 +100,9 @@ const {userName} = useParams()
       reader.readAsDataURL(file);
     }
   };
-  console.log(user._id)
+
+
+
   return (
     <>
       <div className="flex-[4_4_0]  border-r border-gray-700 min-h-screen ">
@@ -141,17 +181,19 @@ const {userName} = useParams()
                 {!isMyProfile && (
                   <button
                     className="btn btn-outline rounded-full btn-sm"
-                    onClick={() => alert("Followed successfully")}
+                    onClick={() => mutate(user?._id)}
                   >
-                    Follow
+                    {isPending && "Loading..."}
+                    {!isPending && amIFollowing && "UnFollow"}
+                    {!isPending && !amIFollowing && "Follow"}
                   </button>
                 )}
                 {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={() => alert("Profile updated successfully")}
+                    onClick={updateProfile}
                   >
-                    Update
+                    {updatingProfile ? "Updating..." : "Update"}
                   </button>
                 )}
               </div>
@@ -223,10 +265,13 @@ const {userName} = useParams()
                   )}
                 </div>
               </div>
+              <Posts
+                feedType={feedType}
+                userName={userName}
+                userId={user._id}
+              />
             </>
           )}
-
-          <Posts feedType={feedType} userName = {userName} userId={user._id} />
         </div>
       </div>
     </>

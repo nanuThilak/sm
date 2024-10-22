@@ -10,6 +10,6 @@ const router = require("express").Router();
 router.get("/profile/:userName", protectRoute, getUserProfileController);
 router.get("/suggested", protectRoute, getSuggestedProfileController);
 router.post("/follow/:id", protectRoute, followUnfollowUserController);
-router.put("/update", protectRoute, updateUserProfileController);
+router.post("/update", protectRoute, updateUserProfileController);
 
 module.exports = router;
