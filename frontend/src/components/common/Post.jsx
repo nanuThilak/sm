@@ -48,7 +48,6 @@ const Post = ({ post }) => {
 
   const {
     mutate: likePost,
-    deletePost,
     isPending: isLiking,
   } = useMutation({
     mutationFn: async () => {
@@ -121,7 +120,8 @@ const Post = ({ post }) => {
     commmentPost()
   };
 
-  const handleLikePost = () => {
+  const handleLikePost = (e) => {
+    e.preventDefault()
     if (isLiking) return;
     likePost();
   };
